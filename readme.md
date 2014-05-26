@@ -2,8 +2,8 @@ PhileBreadcrumbs
 ================
 
 A [PhileCMS](https://github.com/PhileCMS/Phile) plugin that generates 
-breadcrumbs. The plugin returns an array leaving and adds no markup allowing
-you to use it how you want.
+breadcrumbs. The plugin returns an array and adds no markup allowing you to use 
+it how you want.
 
 ## 1. Installation
 
@@ -36,8 +36,8 @@ $config['plugins']['gibbs\\phileBreadcrumbs'] = array('active' => true);
 
 ## 3. Examples
 
-The following examples use the default Twig engine. The ```breadcrumbs``` 
-variable contains three values:
+When the plugin is enabled a ```breadcrumbs``` variable becomes available to 
+your themes. The ```breadcrumbs``` variable contains the following:
 
 1. ```active``` (true or false). The last item/crumb is true.
 2. ```meta```. The crumbs parsed meta data. You can use any meta data.
