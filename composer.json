@@ -1,7 +1,7 @@
 {
     "name": "gibbs/phile-breadcrumbs",
     "type": "phile-plugin",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "description": "Display breadcrumbs in PhileCMS",
     "homepage": "http://dangibbs.co.uk/",
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "phile-cms/phile": "1.*",
-        "phile-cms/plugin-installer-plugin": "1.0.0"
+        "phile-cms/phile": ">=1",
+        "phile-cms/plugin-installer-plugin": ">=1"
     }
 }
