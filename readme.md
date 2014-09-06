@@ -10,7 +10,7 @@ it how you want.
 **Install via composer**
 
 ```bash
-composer require "gibbs/phile-breadcrumbs:1.*"
+php composer.phar require gibbs/phile-breadcrumbs:1.*
 ```
 
 **Install via git**
@@ -41,13 +41,14 @@ your themes. The ```breadcrumbs``` variable contains the following:
 
 1. ```active``` (true or false). The last item/crumb is true.
 2. ```meta```. The crumbs parsed meta data. You can use any meta data.
-3. ```uri```. The crumbs link/uri.
+3. ```uri```. The crumbs relative URL.
+4. ```url```. The crumbs absolute URL.
 
 **Minimal Example**
 
 ```html
 {% for crumb in breadcrumbs %}
-	<a href="{{ crumb.uri }}">{{ crumb.meta.title }}</a>
+	<a href="{{ crumb.url }}">{{ crumb.meta.title }}</a>
 {% endfor %}
 ```
 
@@ -63,6 +64,20 @@ your themes. The ```breadcrumbs``` variable contains the following:
 		{% endif %}
 	{% endfor %}
 </ol>
+```
+
+**Foundation 5 Example**
+
+```html
+<ul class="breadcrumbs">
+	{% for crumb in breadcrumbs %}
+		{% if crumb.active %}
+			<li class="current"><a href="{{ crumb.uri }}">{{ crumb.meta.title }}</a></li>
+		{% else %}
+			<li><a href="{{ crumb.uri }}">{{ crumb.meta.title }}</a></li>
+		{% endif %}
+	{% endfor %}
+</ul>
 ```
 
 **Semantic UI Example**

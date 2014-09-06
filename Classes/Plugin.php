@@ -12,7 +12,7 @@ namespace Phile\Plugin\Gibbs\phileBreadcrumbs;
 class Plugin extends \Phile\Plugin\AbstractPlugin implements
     \Phile\Gateway\EventObserverInterface
 {
-    protected $breadcrumbs = null;
+    protected $breadcrumbs = array();
 
     /**
      * Register plugin events via the constructor
@@ -21,7 +21,7 @@ class Plugin extends \Phile\Plugin\AbstractPlugin implements
      */
     public function __construct()
     {
-        \Phile\Event::registerEvent('before_load_content', $this);
+        \Phile\Event::registerEvent('request_uri', $this);
         \Phile\Event::registerEvent('template_engine_registered', $this);
     }
 
@@ -34,60 +34,36 @@ class Plugin extends \Phile\Plugin\AbstractPlugin implements
      */
     public function on($eventKey, $data = null)
     {
-        if($eventKey == 'before_load_content')
+        if($eventKey == 'request_uri')
         {
-            $root = realpath(CONTENT_DIR);
+            $page = new \Phile\Repository\Page();
+            $path = array_filter(explode('/', $data['uri']) );
 
-            // Remove the root directory to get the page path
-            $page  = str_replace(
-                realpath(CONTENT_DIR), '', realpath($data['filePath'])
-            );
+            // Add the homepage to the start of the path
+            $path = array_merge(array(''), $path);
 
-            // Current URI segments
-            $uri_segments = explode('/', $page);
+            $breadcrumbs  = array();
+            $current_path = null;
 
-            $current_uri = array();
-            $breadcrumbs = array();
+            foreach($path as $crumb) {
+                $current_path .=  '/' . $crumb;
+                $current_page = $page->findByPath($current_path);
 
-            // Build each breadcrumb by uri segment
-            foreach($uri_segments as $uri_segment) {
+                $uri = $current_page->getUrl();
 
-                // Add the current uri to an array
-                $current_uri = array_merge( $current_uri, array($uri_segment) );
-
-                $uri = implode('/', $current_uri);
-
-                // The default array index
-                $index = count($breadcrumbs);
-
-                // Homepage
-                if( empty($uri) )
-                    $uri = '/';
-
-                if( end($uri_segments) == $uri_segment ) {
-                    $active = true;
-                    $meta = new \Phile\Model\Meta(
-                        file_get_contents($root.$uri)
-                    );
-
-                    // Add directory indexes to end of existing array
-                    if (strpos($uri, 'index.md') !== false)
-                        $index = (count($breadcrumbs) -1);
-
-                    // Remove indexes from URI
-                    $uri = str_replace(array('index', CONTENT_EXT), '', $uri);
-                }
-                else {
-                    $active = false;
-                    $meta = new \Phile\Model\Meta(
-                        file_get_contents($root . $uri . '/index.md')
-                    );
+                // Check and remove 'index' from the end of the path if enabled
+                if($this->settings['strip_index'] === true) {
+                    if (substr($uri, strlen($uri) - 5) == 'index') {
+                        $uri = substr_replace($uri, '', strlen($uri) - 5);
+                    }
                 }
 
-                $breadcrumbs[$index] = array(
-                    'active' => $active,
-                    'meta'   => $meta,
-                    'uri'    => $uri,
+                // Create the breadcrumb
+                $breadcrumbs[] = array(
+                    'active' => $crumb == end($path) ? true : false,
+                    'meta'   => $current_page->getMeta()->getAll(),
+                    'uri'    => ltrim($uri, '/'),
+                    'url'    => \Phile\Utility::getBaseUrl() . $uri
                 );
             }
 
