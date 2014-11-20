@@ -48,23 +48,28 @@ class Plugin extends \Phile\Plugin\AbstractPlugin implements
             foreach($path as $crumb) {
                 $current_path .=  '/' . $crumb;
                 $current_page = $page->findByPath($current_path);
+                
+                if($current_page) {
+                    
+                    $uri = $current_page->getUrl();
 
-                $uri = $current_page->getUrl();
-
-                // Check and remove 'index' from the end of the path if enabled
-                if($this->settings['strip_index'] === true) {
-                    if (substr($uri, strlen($uri) - 5) == 'index') {
-                        $uri = substr_replace($uri, '', strlen($uri) - 5);
+                    // Check and remove 'index' from the end of the path if enabled
+                    if($this->settings['strip_index'] === true) {
+                        if (substr($uri, strlen($uri) - 5) == 'index') {
+                            $uri = substr_replace($uri, '', strlen($uri) - 5);
+                        }
                     }
+        
+                    // Create the breadcrumb
+                    $breadcrumbs[] = array(
+                        'active' => $crumb == end($path) ? true : false,
+                        'meta'   => $current_page->getMeta()->getAll(),
+                        'uri'    => ltrim($uri, '/'),
+                        'url'    => \Phile\Utility::getBaseUrl() . $uri
+                    );
+                
                 }
 
-                // Create the breadcrumb
-                $breadcrumbs[] = array(
-                    'active' => $crumb == end($path) ? true : false,
-                    'meta'   => $current_page->getMeta()->getAll(),
-                    'uri'    => ltrim($uri, '/'),
-                    'url'    => \Phile\Utility::getBaseUrl() . $uri
-                );
             }
 
             $this->breadcrumbs = $breadcrumbs;
