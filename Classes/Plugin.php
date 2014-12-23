@@ -47,7 +47,7 @@ class Plugin extends \Phile\Plugin\AbstractPlugin implements
 
             foreach($path as $crumb) {
                 $current_path .=  '/' . $crumb;
-                $current_page = $page->findByPath($current_path);
+                $current_page = $page->findByPath(urldecode($current_path));
                 
                 if($current_page) {
                     
